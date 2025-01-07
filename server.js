@@ -67,15 +67,23 @@ app.post("/users", async (req, res) => {
     const user = new User({ name, email, password: hashedPassword });
 
     user.save();
-    res.status(201).json({ id: user._id, accessToken: user.accessToken });
+    res.status(201).json({
+      id: user._id,
+      accessToken: user.accessToken
+    });
   } catch (err) {
-    res.status(400).json({ message: "could not create user", errors: err.errors });
+    res.status(400).json({
+      message: "could not create user",
+      errors: err.errors
+    });
   }
 });
 
 app.get("/secrets", authenticateUser);
 app.get("/secrets", (req, res) => {
-  res.json({ secret: "This is a super secret message." })
+  res.json({
+    secret: "This is a super secret message."
+  })
 });
 // Problem:
 // Eftersom båda routes använder samma endpoint (/secrets), kommer den andra route-definitionen att skriva över den första. Det betyder att authenticateUser-middleware aldrig kommer att anropas, vilket innebär att alla användare kan få tillgång till det hemliga meddelandet utan autentisering.
@@ -87,7 +95,10 @@ app.get("/secrets", (req, res) => {
 
 // For the user to be able to log in
 app.post("/sessions", async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
+  const user = await User.findOne({
+    email: req.body.email
+  });
+
   if (user && bcrypt.compareSync(req.body.password, user.password)) {
     res.json({ userId: user._id, accessToken: user.accessToken });
   } else {
